@@ -9,16 +9,21 @@ namespace TCPConnectorTest
         static void Main(string[] args)
         {
             TCPConnector connector = new TCPConnector();
-            IPHostEntry host = Dns.GetHostEntry("localhost");
-            IPAddress ipAddress = host.AddressList[1];
-            EndPoint ep = new IPEndPoint(ipAddress, 6060);
-            connector.Connect(ep);
-            if(connector.IsConnected)
+            //IPHostEntry host = Dns.GetHostByAddress(IPAddress.Parse("192.168.37.146"));
+            //IPAddress ipAddress = host.AddressList[0];
+            EndPoint ep = new IPEndPoint(IPAddress.Parse("192.168.37.146"), 6060);
+            //connector.Connect(ep);
+            //if(connector.IsConnected)
+            if(connector.ConnectPersist(ep, 10, 1,1) < 10)
             {
-                connector.PostMessage(new Message("Hello C++ C++ and Rust, from .Net Core", MessageType.DEFAULT));
+                for (int i = 0; i < 10; ++i)
+                {
+                    connector.PostMessage(new Message("Hello C++ and Rust, from .Net Core", MessageType.DEFAULT));
+                }
+                connector.Close();
             }
 
-            connector.Close();
+            
 
         }
     }

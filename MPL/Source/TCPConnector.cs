@@ -25,6 +25,33 @@ namespace MPL
             Start();
         }
 
+        public uint ConnectPersist(EndPoint ep, uint retries, uint wtime_secs, uint vlevel)
+        {
+            uint runAttempts = 0;
+            while (runAttempts++ < retries) 
+            {
+                try
+                {
+                    if (vlevel > 0)
+                    {
+                        Console.WriteLine($"Connection attempt # {runAttempts} runAttempts of {retries} to {ep.ToString()}");
+                    }
+
+                    Connect(ep);
+                    break;
+                }
+                catch (Exception)
+                {
+                    if (vlevel > 0)
+                    {
+                        Console.WriteLine($"Failed Attempt: {runAttempts}");
+                    }
+                    Task.Delay((int) wtime_secs * 1000);
+                }
+            }
+            return runAttempts;
+        }
+
         public void PostMessage(Message msg)
         {
             sendQueue.enQ(msg);
@@ -49,11 +76,12 @@ namespace MPL
         {
             if (!isSending)
             {
+                isSending = true;
                 sendTask = Task.Run(() =>
                 {
                     try
                     {
-                        //IsSending(true);
+                       
                         while (isSending)
                         {
                             // deque the next message
@@ -63,7 +91,7 @@ namespace MPL
                             // the send thread to shutdown
                             if (msg.Type == MessageType.STOP_SENDING)
                             {
-                                isSending = true;
+                                isSending = false;
                             }
                             else
                             {
@@ -84,6 +112,7 @@ namespace MPL
         {
             if (IsConnected)
             {
+                
                 StartSending();
             }   
         }
@@ -106,9 +135,9 @@ namespace MPL
                 sendTask.Wait();
              }
 
-            socket.Shutdown(SocketShutdown.Send);
+           // socket.Shutdown(SocketShutdown.Send);
+            socket.Shutdown(SocketShutdown.Both);
 
-              
             socket.Close();
         }
 
