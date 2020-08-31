@@ -91,11 +91,11 @@ namespace MPL
             }
         }
 
-
         public byte[] ToBytes()
         {
             return BitConverter.GetBytes(data);
         }
+
         public static int SIZE
         {
             get
@@ -125,8 +125,6 @@ namespace MPL
             hdr = new MSGHEADER(0, (uint)type);
             data_ = null;
         }
-
-        
 
         public int Type => hdr.Type();
 

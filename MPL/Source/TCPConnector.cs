@@ -14,11 +14,26 @@ namespace MPL
         {
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             sendQueue = new BlockingQueue<Message>();
+            isSendingMutex = new object();
         }
 
-        public bool IsConnected => socket.Connected;
-       
+        public bool IsSending()
+        {
+            lock (isSendingMutex)
+            {
+                return isSending;
+            }
+        }
+        public void IsSending(bool val)
+        {
+            lock (isSendingMutex)
+            {
+                isSending = val;
+            }
+        }
 
+        public bool IsConnected  => socket.Connected;
+        
         public void Connect(EndPoint ep)
         {
             socket.Connect(ep);
@@ -46,7 +61,7 @@ namespace MPL
                     {
                         Console.WriteLine($"Failed Attempt: {runAttempts}");
                     }
-                    Task.Delay((int) wtime_secs * 1000);
+                    Thread.Sleep((int) wtime_secs * 1000);
                 }
             }
             return runAttempts;
@@ -74,15 +89,15 @@ namespace MPL
 
         private void StartSending()
         {
-            if (!isSending)
+            if (!IsSending())
             {
-                isSending = true;
+                IsSending(true);
+
                 sendTask = Task.Run(() =>
                 {
                     try
-                    {
-                       
-                        while (isSending)
+                    {       
+                        while (IsSending())
                         {
                             // deque the next message
                             Message msg = this.sendQueue.deQ();
@@ -91,7 +106,7 @@ namespace MPL
                             // the send thread to shutdown
                             if (msg.Type == MessageType.STOP_SENDING)
                             {
-                                isSending = false;
+                                IsSending(false);
                             }
                             else
                             {
@@ -102,7 +117,7 @@ namespace MPL
                     }
                     catch
                     {
-                        isSending = false;
+                         IsSending(false);
                     }
                 });
             }
@@ -111,15 +126,14 @@ namespace MPL
         private void Start()
         {
             if (IsConnected)
-            {
-                
+            {      
                 StartSending();
             }   
         }
 
         void StopSending()
         {
-            if (isSending)
+            if(!IsSending())
             {
                 //note: only gets deposited into queue if IsSending is true
                 Message StopMsg = new Message(MessageType.STOP_SENDING);
@@ -147,6 +161,7 @@ namespace MPL
       
         // https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/volatile
         volatile bool isSending;
+        object isSendingMutex;
 
     }
 }
