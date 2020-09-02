@@ -119,6 +119,11 @@ namespace MPL
         public Message(string str, int type): this(Encoding.ASCII.GetBytes(str), type)
         { }
 
+        public Message(MSGHEADER mhdr)
+        {
+            hdr = mhdr;
+            data_ = new byte[mhdr.Len()];
+        }
 
         public Message(int type)
         {
@@ -129,6 +134,11 @@ namespace MPL
         public int Type => hdr.Type();
 
         public byte[] GetData => data_;
+
+        public byte[] GetInternalDataBuf()
+        {
+            return data_;
+        }
 
         public int Length => hdr.Len();
 

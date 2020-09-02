@@ -14,24 +14,17 @@ namespace MPL
         {
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             sendQueue = new BlockingQueue<Message>();
+            recvQueue = new BlockingQueue<Message>();
+
             isSendingMutex = new object();
+            isReceivingMutex = new object();
+            useSendQueueMutex = new object();
+            useRecvQueueMutex = new object();
+            isSending = isReceiving = false;
+            useRecvQueue = useSendQueue = true;
         }
 
-        public bool IsSending()
-        {
-            lock (isSendingMutex)
-            {
-                return isSending;
-            }
-        }
-        public void IsSending(bool val)
-        {
-            lock (isSendingMutex)
-            {
-                isSending = val;
-            }
-        }
-
+       
         public bool IsConnected  => socket.Connected;
         
         public void Connect(EndPoint ep)
@@ -61,7 +54,7 @@ namespace MPL
                     {
                         Console.WriteLine($"Failed Attempt: {runAttempts}");
                     }
-                    Thread.Sleep((int) wtime_secs * 1000);
+                    Task.Delay((int) wtime_secs * 1000).Wait();
                 }
             }
             return runAttempts;
@@ -123,12 +116,91 @@ namespace MPL
             }
         }
 
-        private void Start()
+        public Message GetMessage()
+        {
+            return recvQueue.deQ();
+        }
+
+        public Message RecvMessage()
+        {
+            return RecvSocketMessage();
+        }
+
+        void StartReceiving()
+        {
+            if (!IsReceiving())
+            {
+                IsReceiving(true);
+
+                recvTask = Task.Run(() =>
+                {
+                    try
+                    {
+                        while (IsReceiving())
+                        {
+                            Message msg = RecvSocketMessage();
+                            recvQueue.enQ(msg);
+                            if (msg.Type == MessageType.DISCONNECT)
+                            {
+                                IsReceiving(false);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        IsReceiving(false);
+                    }
+
+                });
+            }
+        }
+
+         
+        // serialize the message header and message and write them into the socket
+        Message RecvSocketMessage()
+        {
+            byte[] hdr_bytes = new byte[MSGHEADER.SIZE];
+            int recv_bytes;
+
+            // receive fixed size message header (see wire protocol in Message.h)
+            if ((recv_bytes = socket.Receive(hdr_bytes)) == MSGHEADER.SIZE)
+            {
+                // construct a Message using the Message header read from the socket channel
+                // *** critical that mhdr is host byte order (e.g. Intel CPU == little endian) ***
+                Message msg = new Message(new MSGHEADER(hdr_bytes, true));
+
+                // recv message data
+                if (socket.Receive(msg.GetInternalDataBuf()) != msg.Length)
+                    throw new SocketException();
+
+                return msg;
+            }
+
+            // if read zero bytes, then this is the zero length message signaling client shutdown
+            if (recv_bytes == 0)
+            {
+                return new Message(MessageType.DISCONNECT);
+            }
+            else
+            {
+                throw new SocketException();
+            }
+        }
+
+
+        private bool Start()
         {
             if (IsConnected)
-            {      
-                StartSending();
-            }   
+            {
+                if (UseSendQueue())
+                    StartSending();
+
+                if (UseRecvQueue())
+                    StartReceiving();
+
+                return true;
+            }
+            return false;
         }
 
         void StopSending()
@@ -145,23 +217,103 @@ namespace MPL
         {
             if (IsConnected)
             {
-                StopSending();
-                sendTask.Wait();
-             }
+                if (UseSendQueue())
+                {
+                    StopSending();
+                    sendTask.Wait();
+                }
+            }
 
-           // socket.Shutdown(SocketShutdown.Send);
-            socket.Shutdown(SocketShutdown.Both);
+            socket.Shutdown(SocketShutdown.Send);
 
+            if(UseRecvQueue())
+            {
+                recvTask.Wait();
+            }
+            socket.Shutdown(SocketShutdown.Receive);
             socket.Close();
+        }
+
+        public bool IsSending()
+        {
+            lock (isSendingMutex)
+            {
+                return isSending;
+            }
+        }
+        public void IsSending(bool val)
+        {
+            lock (isSendingMutex)
+            {
+                isSending = val;
+            }
+        }
+
+        public bool IsReceiving()
+        {
+            lock (isReceivingMutex)
+            {
+                return isReceiving;
+            }
+        }
+        public void IsReceiving(bool val)
+        {
+            lock (isReceivingMutex)
+            {
+                isReceiving = val;
+            }
+        }
+
+        public bool UseSendQueue()
+        {
+            lock (useSendQueueMutex)
+            {
+                return useSendQueue;
+            }
+        }
+        public void UseSendQueue(bool val)
+        {
+            lock (useSendQueueMutex)
+            {
+                useSendQueue = val;
+            }
+        }
+
+        public bool UseRecvQueue()
+        {
+            lock (useRecvQueueMutex)
+            {
+                return useRecvQueue;
+            }
+        }
+        public void UseRecvQueue(bool val)
+        {
+            lock (useRecvQueueMutex)
+            {
+                useRecvQueue = val;
+            }
         }
 
         Socket socket;
         BlockingQueue<Message> sendQueue;
+        BlockingQueue<Message> recvQueue;
         Task sendTask;
+        Task recvTask;
       
         // https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/volatile
         volatile bool isSending;
         object isSendingMutex;
+
+        volatile bool isReceiving;
+        object isReceivingMutex;
+
+        volatile bool useSendQueue;
+        object useSendQueueMutex;
+
+        volatile bool useRecvQueue;
+        object useRecvQueueMutex;
+
+
 
     }
 }
