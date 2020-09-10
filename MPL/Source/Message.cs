@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -100,13 +102,14 @@ namespace MPL
         {
             get
             {
-                return sizeof(uint);
+                return sizeof(UInt32);
             }
         }
     }
 
     public class Message
     {
+
         public Message(byte[] data, int type)
         {
             data_ = data;
@@ -123,6 +126,12 @@ namespace MPL
         {
             hdr = mhdr;
             data_ = new byte[mhdr.Len()];
+        }
+
+        public Message(MSGHEADER mhdr, byte[] data)
+        {
+            hdr = mhdr;
+            data_ = data;
         }
 
         public Message(int type)
@@ -144,6 +153,7 @@ namespace MPL
 
         public MSGHEADER GetHeader => hdr;
 
+     
         public override string ToString()
         {
             if(data_ != null)
@@ -151,6 +161,27 @@ namespace MPL
             return string.Empty;
         }
 
+        public byte[] ToFixedSizeMessage(int size)
+        {
+            byte[] msg = new byte[size];
+
+            Buffer.BlockCopy(hdr.ToNetworkByteOrder(), 0, msg, 0, MSGHEADER.SIZE);
+
+            if (data_.Length >= size)
+            {
+                Buffer.BlockCopy(data_, 0, msg, MSGHEADER.SIZE, size);
+            }
+            else
+            {
+               
+                Buffer.BlockCopy(data_, 0, msg, MSGHEADER.SIZE, data_.Length);
+                Buffer.BlockCopy(data_, 0, msg, MSGHEADER.SIZE + data_.Length, data_.Length);
+
+            }
+
+            return msg;
+
+        }
         private byte[] data_;
         private MSGHEADER hdr;       
     }

@@ -17,11 +17,16 @@ namespace TCPConnectorTest
             EndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 6060);
             //connector.Connect(ep);
             //if(connector.IsConnected)
+            string name = "test 1";
+            int num_messages = 10;
+
             if(connector.ConnectPersist(ep, 10, 1,1) < 10)
             {
-                for (int i = 0; i < 10; ++i)
+                for (int i = 0; i < num_messages; ++i)
                 {
-                    connector.SendMessage(new Message("Hello C++ and Rust, from .Net Core", MessageType.DEFAULT));
+                    Message msg = new Message(name + " [ Message #: " + (i + 1).ToString() + " ]", MessageType.DEFAULT);
+                    Console.WriteLine("Sending: " + msg);
+                    connector.SendMessage(msg);
                     Message reply = connector.RecvMessage();
                     Console.WriteLine(reply);
                     

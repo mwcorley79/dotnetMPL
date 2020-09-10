@@ -3,11 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MPL", "MPL\MPL.csproj", "{D99D3BA2-EBE6-4A80-85E8-143DF472D42B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPL", "MPL\MPL.csproj", "{D99D3BA2-EBE6-4A80-85E8-143DF472D42B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCPConnectorTest", "TCPConnectorTest\TCPConnectorTest.csproj", "{64C8EE96-FB18-4578-B2D6-AC1584ADFBC1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TCPConnectorTest", "TCPConnectorTest\TCPConnectorTest.csproj", "{64C8EE96-FB18-4578-B2D6-AC1584ADFBC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageTest", "MessageTest\MessageTest.csproj", "{FD2AD9F7-D582-45DD-AD42-46BF3A457436}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageTest", "MessageTest\MessageTest.csproj", "{FD2AD9F7-D582-45DD-AD42-46BF3A457436}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TCPResponderTest", "TCPResponderTest\TCPResponderTest.csproj", "{76E3FA1D-C6D0-4128-AF5B-AD79D2DBB5C9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PerfTestCombinedVariableSizeMessage", "PerfTestCombinedVariableSizeMessage\PerfTestCombinedVariableSizeMessage.csproj", "{F9BF8D0F-0D33-451A-A13A-BFC8A7C55D43}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinTestApp.Android", "XamarinTestApp\XamarinTestApp.Android\XamarinTestApp.Android.csproj", "{5C7082BF-9B95-4129-B863-A7FAA71676F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinTestApp", "XamarinTestApp\XamarinTestApp\XamarinTestApp.csproj", "{6068B10A-324D-4FC4-BC44-131887CB6447}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +35,24 @@ Global
 		{FD2AD9F7-D582-45DD-AD42-46BF3A457436}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD2AD9F7-D582-45DD-AD42-46BF3A457436}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD2AD9F7-D582-45DD-AD42-46BF3A457436}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76E3FA1D-C6D0-4128-AF5B-AD79D2DBB5C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76E3FA1D-C6D0-4128-AF5B-AD79D2DBB5C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76E3FA1D-C6D0-4128-AF5B-AD79D2DBB5C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76E3FA1D-C6D0-4128-AF5B-AD79D2DBB5C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9BF8D0F-0D33-451A-A13A-BFC8A7C55D43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9BF8D0F-0D33-451A-A13A-BFC8A7C55D43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9BF8D0F-0D33-451A-A13A-BFC8A7C55D43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9BF8D0F-0D33-451A-A13A-BFC8A7C55D43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C7082BF-9B95-4129-B863-A7FAA71676F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C7082BF-9B95-4129-B863-A7FAA71676F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C7082BF-9B95-4129-B863-A7FAA71676F0}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{5C7082BF-9B95-4129-B863-A7FAA71676F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C7082BF-9B95-4129-B863-A7FAA71676F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C7082BF-9B95-4129-B863-A7FAA71676F0}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{6068B10A-324D-4FC4-BC44-131887CB6447}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6068B10A-324D-4FC4-BC44-131887CB6447}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6068B10A-324D-4FC4-BC44-131887CB6447}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6068B10A-324D-4FC4-BC44-131887CB6447}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
