@@ -267,7 +267,7 @@ namespace MPL
 
         protected override void SendSocketMessage(Message msg)
         {
-            SocketUtils.SendAll(GetDataSocket(), msg.ToFixedSizeMessage(msg_size_), SocketFlags.None);
+            SocketUtils.SendAll(GetDataSocket(), msg.GetInternalDataBuf(), SocketFlags.None);
         }
 
         public int GetMessageSize()

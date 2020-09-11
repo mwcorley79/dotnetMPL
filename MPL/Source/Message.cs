@@ -113,13 +113,13 @@ namespace MPL
         public Message(byte[] data, int type)
         {
             data_ = data;
-            if(data_ != null)
-               hdr = new MSGHEADER((uint)data.Length, (uint)type);
+            if (data_ != null)
+                hdr = new MSGHEADER((uint)data.Length, (uint)type);
             else
-               hdr = new MSGHEADER(0, (uint)type);
+                hdr = new MSGHEADER(0, (uint)type);
         }
- 
-        public Message(string str, int type): this(Encoding.ASCII.GetBytes(str), type)
+
+        public Message(string str, int type) : this(Encoding.ASCII.GetBytes(str), type)
         { }
 
         public Message(MSGHEADER mhdr)
@@ -153,37 +153,29 @@ namespace MPL
 
         public MSGHEADER GetHeader => hdr;
 
-     
+
         public override string ToString()
         {
-            if(data_ != null)
-              return Encoding.ASCII.GetString(data_);
+            if (data_ != null)
+                return Encoding.ASCII.GetString(data_, 0, Length);
             return string.Empty;
         }
 
-        public byte[] ToFixedSizeMessage(int size)
+        public Message(int size, byte[] buf, int type)
         {
-            byte[] msg = new byte[size];
-
-            Buffer.BlockCopy(hdr.ToNetworkByteOrder(), 0, msg, 0, MSGHEADER.SIZE);
-
-            if (data_.Length >= size)
+            if (buf != null)
             {
-                Buffer.BlockCopy(data_, 0, msg, MSGHEADER.SIZE, size);
+                data_ = new byte[size + MSGHEADER.SIZE];
+                hdr = new MSGHEADER((uint) buf.Length, (uint)type);
+                
+                Buffer.BlockCopy(hdr.ToNetworkByteOrder(), 0, data_, 0, MSGHEADER.SIZE);
+                Buffer.BlockCopy(buf, 0, data_, MSGHEADER.SIZE, buf.Length);
             }
-            else
-            {
-               
-                Buffer.BlockCopy(data_, 0, msg, MSGHEADER.SIZE, data_.Length);
-                Buffer.BlockCopy(data_, 0, msg, MSGHEADER.SIZE + data_.Length, data_.Length);
-
-            }
-
-            return msg;
-
+         
         }
+
         private byte[] data_;
-        private MSGHEADER hdr;       
+        private MSGHEADER hdr;
     }
 }
 

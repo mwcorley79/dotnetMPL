@@ -291,7 +291,7 @@ namespace MPL
         // only one send and recv system call
         protected override void SendSocketMessage(Message msg)
         {
-            SocketUtils.SendAll(socket, msg.ToFixedSizeMessage(msg_size_), SocketFlags.None);
+            SocketUtils.SendAll(socket, msg.GetInternalDataBuf(), SocketFlags.None);
         }
 
         protected override Message RecvSocketMessage()

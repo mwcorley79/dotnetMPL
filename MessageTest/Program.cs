@@ -55,6 +55,10 @@ namespace MPL_Tests
                     Console.WriteLine("Passed!");
 
                 Console.WriteLine("All tests passed!");
+
+
+                Message msg3 = new Message(1024, new byte[1024], MessageType.DEFAULT);
+                Console.WriteLine(msg3.Length);
             }
             catch
             {
