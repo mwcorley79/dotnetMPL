@@ -1,5 +1,5 @@
 services
- - docker
+   - docker
 language: csharp
 solution: dotnetMPL.sln
 mono: none
