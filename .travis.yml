@@ -1,5 +1,4 @@
-sudo: required
-services
+services:
    - docker
 language: csharp
 solution: dotnetMPL.sln
