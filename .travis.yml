@@ -4,5 +4,4 @@ mono: none
 dotnet: 3.1
 script:
  - dotnet restore
- - dotnet run --project MessageTest/
-
+ - dotnet test
