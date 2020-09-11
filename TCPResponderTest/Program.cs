@@ -4,7 +4,6 @@ using MPL;
 
 namespace TCPResponderTest
 {
-
     class TestClientHandler : ClientHandler
     {
         // this is a creational function: you must implement it
@@ -18,7 +17,7 @@ namespace TCPResponderTest
         public override void AppProc()
         {
             // while there are messages in the blocking queue, and you have seen the disconnect
-            // message, pull messages out and dispaly them.
+            // message, pull messages out and display them.
 
             Message msg;
 
@@ -31,14 +30,13 @@ namespace TCPResponderTest
         }
     }
 
-
     class Program
     {
         static void Main(string[] args)
         {
             Console.WriteLine("Test TCP Responder");
 
-            EndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 6060);
+            EndPoint ep = new IPEndPoint(IPAddress.Any, 6060);
             TCPResponder responder = new TCPResponder(ep);
             responder.UseClientRecvQueue(true);
             responder.UseClientSendQueue(true);
