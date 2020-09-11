@@ -1,8 +1,7 @@
-sudo: required
-services:
-        - docker
+services
+ - docker
 language: csharp
-solutuion: dotnetMPL.sln
+solution: dotnetMPL.sln
 mono: none
 dotnet: 3.1
 script:
