@@ -47,9 +47,7 @@ namespace TCPResponderTest
             responder.Start();
             Console.WriteLine("Server Listing on: {0} ", ep);
           
-            responder.Stop();
-
-            
+            responder.Stop();            
         }
     }
 }

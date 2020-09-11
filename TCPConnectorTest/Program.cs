@@ -14,7 +14,7 @@ namespace TCPConnectorTest
             connector.UseSendQueue(false);
             //IPHostEntry host = Dns.GetHostByAddress(IPAddress.Parse("192.168.37.146"));
             //IPAddress ipAddress = host.AddressList[0];
-            EndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 6060);
+            EndPoint ep = new IPEndPoint(IPAddress.Parse("172.17.0.2"), 6060);
             //connector.Connect(ep);
             //if(connector.IsConnected)
             string name = "test 1";
