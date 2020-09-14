@@ -66,12 +66,14 @@ namespace MessageTests
         public void TestFixedSizeMessage(int value)
         {
             //test fixed size message 
+            byte[] buf = new byte[value];
+            for(int i = 0; i < buf.Length; ++i)
+            {
+                buf[i] = ASCIIEncoding.ASCII.GetBytes("m")[0];
+            }
+            Message m = new Message(value, buf, MessageType.DEFAULT);
             Message msg3 = new Message(value, new byte[value], MessageType.DEFAULT);
             Assert.True(msg3.Length == value);
         }
-
-
-
-
     }
 }
