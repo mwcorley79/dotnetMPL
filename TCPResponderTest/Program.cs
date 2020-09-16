@@ -24,7 +24,7 @@ namespace TCPResponderTest
             // when UseReceiveQueue == false, then we must ReceiveMessage instead of GetMessage()
             while ((msg = GetMessage()).Type != MessageType.DISCONNECT)
             {
-                Console.WriteLine("Got a message this is devops CI/CD 10. and this is fun: " + msg + " from:  " + RemoteEP);
+                Console.WriteLine("Got a message this is devops CI/CD 11. and this is really fun: " + msg + " from:  " + RemoteEP);
                 PostMessage(new Message("Reply from server: " + GetServiceEndPoint , MessageType.DEFAULT));
             }
         }
