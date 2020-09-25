@@ -20,12 +20,14 @@ namespace TCPResponderTest
             // message, pull messages out and display them.
 
             Message msg;
-
+            int count = 0;
             // when UseReceiveQueue == false, then we must ReceiveMessage instead of GetMessage()
             while ((msg = GetMessage()).Type != MessageType.DISCONNECT)
             {
+                count++;
                 Console.WriteLine("Got a message this is devops CI/CD 11. and this is really fun: " + msg + " from:  " + RemoteEP);
-                PostMessage(new Message("Reply from server: " + GetServiceEndPoint , MessageType.DEFAULT));
+                PostMessage(new Message("Reply from server at: " + GetServiceEndPoint.ToString() +
+                                         " \"Hello to: " +  RemoteEP.ToString() + " this is msg #: " + (count).ToString() + "\"",  MessageType.DEFAULT));
             }
         }
     }
@@ -47,7 +49,8 @@ namespace TCPResponderTest
             responder.Start();
             Console.WriteLine("Server Listing on: {0} ", ep);
           
-            responder.Stop();            
+            responder.Stop();
+            Console.WriteLine("Exiting");            
         }
     }
 }

@@ -9,12 +9,22 @@ namespace TCPConnectorTest
     {
         static void Main(string[] args)
         {
+            string ip = "127.0.0.1";
+            int port = 6060;
+
+            if(args.Length == 2)
+            {
+                ip = args[0];
+                port = int.Parse(args[1]);
+            }
+            
+            
             TCPConnector connector = new TCPConnector();
             connector.UseRecvQueue(false);
             connector.UseSendQueue(false);
             //IPHostEntry host = Dns.GetHostByAddress(IPAddress.Parse("192.168.37.146"));
             //IPAddress ipAddress = host.AddressList[0];
-            EndPoint ep = new IPEndPoint(IPAddress.Parse("172.17.0.2"), 6060);
+            EndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
             //connector.Connect(ep);
             //if(connector.IsConnected)
             string name = "test 1";
