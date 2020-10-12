@@ -62,12 +62,11 @@ namespace MPL
 
         protected virtual void SendSocketMessage(Message msg)
         {
-            // send the header
-            SocketUtils.SendAll(client_socket, msg.GetHeader.ToNetworkByteOrder(), SocketFlags.None);
+             // send the header
+            SocketUtils.SendAll(client_socket, msg.get_header_bytes(), SocketFlags.None);
 
             // send the data
-            if (msg.GetData != null)
-                SocketUtils.SendAll(client_socket,msg.GetData, SocketFlags.None);
+            SocketUtils.SendAll(client_socket, msg.get_content_bytes(), SocketFlags.None);
         }
 
         protected virtual void SendProc()
@@ -75,7 +74,7 @@ namespace MPL
             try
             {
                 Message msg = sendQ_.deQ();
-                while (msg.Type != MessageType.STOP_SENDING)
+                while (msg.get_type() != MessageType.STOP_SENDING)
                 {
                     // serialize the message into the socket
                     SendSocketMessage(msg);
@@ -139,11 +138,11 @@ namespace MPL
                     msg = RecvSocketMessage();
                     recvQ_.enQ(msg);
                 }
-                while (msg.Type != MessageType.DISCONNECT);
+                while (msg.get_type() != MessageType.DISCONNECT);
             }
             catch(Exception ex)
             {
-                Console.WriteLine("ClientHandler::RecvProc(): {0} Message len: {1}", ex.Message, msg.Length);
+                Console.WriteLine("ClientHandler::RecvProc(): {0} Message len: {1}", ex.Message, msg.get_content_len());
             }
         }
 
@@ -189,22 +188,20 @@ namespace MPL
        
         // serialize the message header and message and write them into the socket
         protected virtual Message RecvSocketMessage()
-        {
-            byte[] hdr_bytes = new byte[MSGHEADER.SIZE];
+        {    
+            byte[] hdr_bytes = new byte[Message.get_header_len()];
             int recv_bytes;
 
             // receive fixed size message header (see wire protocol in Message.h)
-            if ((recv_bytes = SocketUtils.RecvAll(client_socket, hdr_bytes, SocketFlags.None)) == MSGHEADER.SIZE)
+            if ((recv_bytes = SocketUtils.RecvAll(client_socket, hdr_bytes, SocketFlags.None)) == (int) Message.get_header_len())
             {
                 // construct a Message using the Message header read from the socket channel
                 // *** critical that mhdr is host byte order (e.g. Intel CPU == little endian) ***
-                Message msg = new Message(new MSGHEADER(hdr_bytes, true));
+                Message msg = new Message(hdr_bytes);
 
                 // recv message data
-                if (SocketUtils.RecvAll(client_socket, msg.GetInternalDataBuf(), SocketFlags.None) != msg.Length)
-                {
+                if (SocketUtils.RecvAll(client_socket, msg.get_content_bytes(), SocketFlags.None) != (int) msg.get_content_len())
                     throw new SocketException();
-                }
 
                 return msg;
             }
@@ -245,13 +242,12 @@ namespace MPL
 
         protected override Message RecvSocketMessage()
         {
-            byte[] buffer = new byte[msg_size_];
-            int recv_bytes = SocketUtils.RecvAll(GetDataSocket(), buffer, SocketFlags.None);
-            if (recv_bytes == msg_size_)
+             Message r_msg = new Message((ulong)msg_size_);
+
+            int recv_bytes = SocketUtils.RecvAll(GetDataSocket(), r_msg.get_raw_ref(), SocketFlags.None);
+            if(recv_bytes == msg_size_)
             {
-                ArraySegment<byte> raw_hdr = new ArraySegment<byte>(buffer, 0, MSGHEADER.SIZE);
-                ArraySegment<byte> data = new ArraySegment<byte>(buffer, MSGHEADER.SIZE, (msg_size_ - MSGHEADER.SIZE));
-                return new Message((new MSGHEADER(raw_hdr.Array, true)), data.Array);
+                return r_msg;    
             }
 
             // if read zero bytes, then this is the zero length message signaling client shutdown
@@ -267,7 +263,7 @@ namespace MPL
 
         protected override void SendSocketMessage(Message msg)
         {
-            SocketUtils.SendAll(GetDataSocket(), msg.GetInternalDataBuf(), SocketFlags.None);
+            SocketUtils.SendAll(GetDataSocket(), msg.get_raw_ref(), SocketFlags.None);
         }
 
         public int GetMessageSize()

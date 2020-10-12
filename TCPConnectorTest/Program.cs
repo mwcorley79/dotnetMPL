@@ -34,7 +34,7 @@ namespace TCPConnectorTest
             {
                 for (int i = 0; i < num_messages; ++i)
                 {
-                    Message msg = new Message(name + " [ Message #: " + (i + 1).ToString() + " ]", MessageType.DEFAULT);
+                    Message msg = new Message(100,name + " [ Message #: " + (i + 1).ToString() + " ]", MessageType.DEFAULT);
                     Console.WriteLine("Sending: " + msg);
                     connector.SendMessage(msg);
                     Message reply = connector.RecvMessage();

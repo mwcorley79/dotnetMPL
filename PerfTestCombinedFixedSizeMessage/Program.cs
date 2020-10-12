@@ -49,7 +49,7 @@ namespace MPL
             )
         {
 
-            Console.Write("\n -- " + name + ": " + num_msgs + " msgs," + (sz_bytes + MSGHEADER.SIZE).ToString() + " bytes per msg");
+            Console.Write("\n -- " + name + ": " + num_msgs + " msgs," + sz_bytes.ToString() + " bytes per msg");
             
             FixedSizeMsgConnector conn = new FixedSizeMsgConnector((int)sz_bytes);
 
@@ -62,7 +62,7 @@ namespace MPL
                 {
                     //int count = 0;
                     Message msg;
-                    while ((msg = conn.GetMessage()).Type != MessageType.DISCONNECT)
+                    while ((msg = conn.GetMessage()).get_type() != MessageType.DISCONNECT)
                     {
                        // count++;
                         //  Console.Write("\n received msg: " + msg.Length);
@@ -74,11 +74,10 @@ namespace MPL
                 handle.Start();
                 
 
-                // construct message of sz_bytes (pertains to message body, not including header)
-                char[] body = new char[sz_bytes];
-
+               
                 // build a message with sz_bytes count of null characters 
-                Message msg = new Message(memset(body, '\0'), MessageType.DEFAULT);
+                Message msg = new Message(sz_bytes, MessageType.DEFAULT);
+                msg.init_content();
 
                 for (uint _i = 0; _i < num_msgs; ++_i)
                 {
@@ -86,7 +85,6 @@ namespace MPL
                     conn.PostMessage(msg);
                 }
                
-
                 conn.Close(handle); // handle); // handle);      
             }
         }
@@ -154,15 +152,13 @@ namespace MPL
             // this is where you define the custom server processing: you must implement it
             public override void AppProc()
             {
-                // construct message of sz_bytes (pertains to message body, not including header)
-                char[] body = new char[sz_bytes_];
-
                 // build a message with sz_bytes count of null characters 
-                Message msgSend = new Message(memset(body, '\0'), MessageType.DEFAULT);
+                Message msgSend = new Message((ulong) sz_bytes_);
+                msgSend.init_content();
 
                 Message msg;
                 //no use of queue
-                while ((msg = ReceiveMessage()).Type != MessageType.DISCONNECT)
+                while ((msg = ReceiveMessage()).get_type() != MessageType.DISCONNECT)
                 {
                     // PostMessage(msg); // post to send queue
                     SendMessage(msgSend); //direct send                       

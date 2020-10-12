@@ -22,12 +22,13 @@ namespace TCPResponderTest
             Message msg;
             int count = 0;
             // when UseReceiveQueue == false, then we must ReceiveMessage instead of GetMessage()
-            while ((msg = GetMessage()).Type != MessageType.DISCONNECT)
+            while ((msg = GetMessage()).get_type() != MessageType.DISCONNECT)
             {
                 count++;
                 Console.WriteLine("Got a message this is devops CI/CD 11. and this is really fun: " + msg + " from:  " + RemoteEP);
-                PostMessage(new Message("Reply from server at: " + GetServiceEndPoint.ToString() +
-                                         " \"Hello to: " +  RemoteEP.ToString() + " this is msg #: " + (count).ToString() + "\"",  MessageType.DEFAULT));
+                PostMessage(new Message(150,"Reply from server at: " + GetServiceEndPoint.ToString() +
+                                        "\"Hello to: " +  RemoteEP.ToString() + " this is msg #: " +
+                                         (count).ToString() + "\"",  MessageType.DEFAULT));
             }
         }
     }
