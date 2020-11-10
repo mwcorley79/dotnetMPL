@@ -13,11 +13,9 @@ namespace MessageTests
         //            https://xunit.net/docs/getting-started/netcore/cmdline
         // ** test 1 of 7 ***
 
-
         // Facts are tests which are always true. They test invariant conditions.
 
         // Theories are tests which are only true for a particular set of data.
-
 
         [Fact]  //The [Fact] attribute declares a test method that's run by the test runner. From the Message.Tests folder
         public void testStringCtor()
