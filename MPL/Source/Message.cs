@@ -42,7 +42,6 @@ namespace MPL
               u8[] content_buf,
               usize content_len,
               u8 mtype) : this(sz, mtype)
-
         {
             // if(br_len_ < HEADER_SIZE)
             //   throw std::invalid_argument("message size must be greater than equal to the header size");    
@@ -171,8 +170,6 @@ namespace MPL
         }
 
         
-
-
         public void init_content(u8 val = 0)
         {
             uint clen = max_content_len();

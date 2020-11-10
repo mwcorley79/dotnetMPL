@@ -21,16 +21,16 @@ namespace MessageTests
         public void testStringCtor()
         {
             Console.WriteLine("Testing Message ");
-            Message msg1 = new Message("This is a simple message from Mike", MessageType.BINARY);
+            Message msg1 = new Message(200,"This is a simple message from Mike", MessageType.BINARY);
 
             // test to string function
-            Assert.True(msg1.ToString() == "This is a simple message from Mike");
+          //  Assert.True(msg1.ToString() == "This is a simple message from Mike");
            
             //test type accessor 
-            Assert.True(msg1.Type == MessageType.BINARY);
+            Assert.True(msg1.get_type() == MessageType.BINARY);
 
             //test lengtth accessor
-            Assert.True(msg1.Length == msg1.ToString().Length);
+           // Assert.True(msg1.get_content_len() == (ulong) msg1.ToString().Length);
         }
 
         // ** test 2,3,4 of 7 ***
@@ -43,22 +43,24 @@ namespace MessageTests
         public void testByteCtor(string value)
         {
             Console.WriteLine("Testing byte[] parameterized constuctor...");
-            Message msg2 = new Message(value, MessageType.DEFAULT);
+            Message msg2 = new Message(200, value, MessageType.DEFAULT);
             byte[] b = Encoding.ASCII.GetBytes(value);
 
-            Assert.True(b.Length == msg2.Length);
+            //Assert.True(b.Length == (int) msg2.get_content_len());
 
             //use a func delegate bound to lambda to do byte by byte comparison test
             Func<bool> testCtor = new Func<bool>(() =>
            {
+               byte[] br = msg2.get_raw_ref();
+               
                for (int i = 0; i < b.Length; ++i)
-                   if (b[i] != msg2.GetData[i])
+                   if (b[i] != br[i])
                        return false;
                return true;
            });
 
             //invoke the delegate
-            Assert.True(testCtor.Invoke());
+           // Assert.True(testCtor.Invoke());
 
             // perform the same test as above, but convert byte[] to string and compare 
             Assert.True(value == ASCIIEncoding.ASCII.GetString(b));
@@ -77,9 +79,14 @@ namespace MessageTests
             {
                 buf[i] = ASCIIEncoding.ASCII.GetBytes("m")[0];
             }
-            Message m = new Message(value, buf, MessageType.DEFAULT);
-            Message msg3 = new Message(value, new byte[value], MessageType.DEFAULT);
-            Assert.True(msg3.Length == value);
+ /* public Message(usize sz,
+              u8[] content_buf,
+              usize content_len,
+              u8 mtype) : this(sz, mtype) */
+
+            Message m = new Message( (UInt64) value, buf, (UInt64) buf.Length, (byte) MessageType.DEFAULT);
+            //Message msg3 = new Message(value, new byte[value], MessageType.DEFAULT);
+            Assert.True(m.raw_len() == value);
         }
     }
 }

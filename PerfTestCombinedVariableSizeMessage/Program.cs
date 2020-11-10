@@ -49,7 +49,7 @@ namespace MPL
             )
         {
 
-            Console.Write("\n -- " + name + ": " + num_msgs + " msgs," + (sz_bytes + MSGHEADER.SIZE).ToString() + " bytes per msg");
+            Console.Write("\n -- " + name + ": " + num_msgs + " msgs," + (sz_bytes + Message.get_header_len().ToString()) + " bytes per msg");
             
             TCPConnector conn = new TCPConnector();
 
@@ -62,9 +62,9 @@ namespace MPL
                 {
                     int count = 0;
                     Message msg;
-                    while ((msg = conn.GetMessage()).Type != MessageType.DISCONNECT)
+                    while ((msg = conn.GetMessage()).get_type() != MessageType.DISCONNECT)
                     {
-                       // count++;
+                       count++;
                         //  Console.Write("\n received msg: " + msg.Length);
                     }
 
@@ -78,7 +78,8 @@ namespace MPL
                 char[] body = new char[sz_bytes];
 
                 // build a message with sz_bytes count of null characters 
-                Message msg = new Message(memset(body, '\0'), MessageType.DEFAULT);
+                // Message msg = new Message(memset(body, '\0'), MessageType.DEFAULT);
+                Message msg = new Message(sz_bytes, MessageType.DEFAULT);
 
                 for (uint _i = 0; _i < num_msgs; ++_i)
                 {
@@ -158,11 +159,11 @@ namespace MPL
                 char[] body = new char[sz_bytes_];
 
                 // build a message with sz_bytes count of null characters 
-                Message msgSend = new Message(memset(body, '\0'), MessageType.DEFAULT);
-
+               // Message msgSend = new Message(memset(body, '\0'), MessageType.DEFAULT);
+                Message msgSend = new Message((ulong) sz_bytes_,  MessageType.DEFAULT);
                 Message msg;
                 //no use of queue
-                while ((msg = ReceiveMessage()).Type != MessageType.DISCONNECT)
+                while ((msg = ReceiveMessage()).get_type() != MessageType.DISCONNECT)
                 {
                     // PostMessage(msg); // post to send queue
                     SendMessage(msgSend); //direct send                       
