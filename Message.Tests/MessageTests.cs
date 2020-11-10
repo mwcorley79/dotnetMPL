@@ -46,7 +46,7 @@ namespace MessageTests
             Message msg2 = new Message(200, value, MessageType.DEFAULT);
             byte[] b = Encoding.ASCII.GetBytes(value);
 
-            //Assert.True(b.Length == (int) msg2.get_content_len());
+            // Assert.True(b.Length == (int) msg2.get_content_len());
 
             //use a func delegate bound to lambda to do byte by byte comparison test
             Func<bool> testCtor = new Func<bool>(() =>
